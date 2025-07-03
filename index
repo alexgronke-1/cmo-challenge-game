@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMO Challenge Navigator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 90%;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(0%) translateY(0%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .challenge-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .challenge-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .challenge-description {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .choice-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .choice-btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .traditional-choice {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .traditional-choice:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .pretzel-choice {
+            background: #667eea;
+            color: white;
+        }
+
+        .pretzel-choice:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            font-weight: 500;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-result {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .warning-result {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .next-btn, .restart-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 15px 10px;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn:hover, .restart-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .final-message {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .final-message h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .cta-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .intro-screen {
+            text-align: center;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="content">
+            <div id="intro-screen" class="intro-screen">
+                <h1>CMO Challenge Navigator</h1>
+                <p class="subtitle">Navigate real CMO challenges and discover how Pretzel's approach delivers better outcomes</p>
+                <p style="margin: 20px 0; font-size: 1.1rem; color: #555;">You're facing pressure from the board to prove marketing ROI while driving growth with a tight budget. Make the right choices to succeed.</p>
+                <button class="start-btn" onclick="startGame()">Start Challenge</button>
+            </div>
+
+            <div id="game-screen" style="display: none;">
+                <div class="score-display">
+                    Challenge <span id="current-challenge">1</span> of 4 | Success Score: <span id="score">0</span>/100
+                </div>
+                
+                <div class="challenge-card">
+                    <div class="challenge-title" id="challenge-title"></div>
+                    <div class="challenge-description" id="challenge-description"></div>
+                    
+                    <div class="choice-buttons">
+                        <button class="choice-btn traditional-choice" id="traditional-choice" onclick="makeChoice('traditional')"></button>
+                        <button class="choice-btn pretzel-choice" id="pretzel-choice" onclick="makeChoice('pretzel')"></button>
+                    </div>
+                    
+                    <div id="result" class="result" style="display: none;"></div>
+                    <button id="next-btn" class="next-btn" style="display: none;" onclick="nextChallenge()">Next Challenge →</button>
+                </div>
+            </div>
+
+            <div id="final-screen" style="display: none;">
+                <div class="final-message">
+                    <h2 id="final-title"></h2>
+                    <p id="final-message"></p>
+                    <button class="cta-btn" onclick="window.open('#', '_blank')">Learn How Pretzel Can Help</button>
+                    <button class="restart-btn" onclick="restartGame()">Try Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const challenges = [
+            {
+                title: "Budget Pressure from CFO",
+                description: "Your CFO is demanding 20% budget cuts but wants the same pipeline results. The board meeting is next week.",
+                traditional: "Cut across all channels equally",
+                pretzel: "Use data to optimize spend allocation",
+                traditionalResult: "Generic cuts hurt performing channels. Pipeline drops 30%. CFO questions marketing's strategic value.",
+                pretzelResult: "Data reveals which channels drive real pipeline. You reallocate budget to high-performers, maintain results with less spend.",
+                traditionalPoints: -10,
+                pretzelPoints: 25
+            },
+            {
+                title: "Attribution Mystery",
+                description: "Sales claims marketing leads are low quality, but you can't prove which activities actually drive revenue.",
+                traditional: "Generate more MQLs to prove volume",
+                pretzel: "Implement journey-based attribution",
+                traditionalResult: "Lead volume increases but conversion stays low. Sales remains skeptical. You're still guessing what works.",
+                pretzelResult: "Clear visibility into the entire customer journey. You prove which marketing drives revenue and optimize accordingly.",
+                traditionalPoints: -15,
+                pretzelPoints: 30
+            },
+            {
+                title: "Personalization at Scale",
+                description: "Customers expect personalized experiences, but creating custom content for every segment is impossible with your current resources.",
+                traditional: "Create more general campaigns",
+                pretzel: "Combine human strategy with AI execution",
+                traditionalResult: "Generic messages get ignored. Engagement drops. Customers choose competitors who 'get them' better.",
+                pretzelResult: "AI personalizes experiences based on real behavior while humans set strategy. Engagement increases 40%.",
+                traditionalPoints: -20,
+                pretzelPoints: 35
+            },
+            {
+                title: "CEO Demands Growth",
+                description: "The CEO wants 50% pipeline growth but your proven tactics are hitting diminishing returns.",
+                traditional: "Do more of what worked before",
+                pretzel: "Market how customers actually buy",
+                traditionalResult: "More of the same yields declining results. You hit a plateau while competitors who adapted pull ahead.",
+                pretzelResult: "Journey-based marketing aligns with how customers research and buy. Pipeline growth accelerates sustainably.",
+                traditionalPoints: -25,
+                pretzelPoints: 30
+            }
+        ];
+
+        let currentChallenge = 0;
+        let totalScore = 0;
+
+        function startGame() {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            showChallenge();
+        }
+
+        function showChallenge() {
+            const challenge = challenges[currentChallenge];
+            document.getElementById('current-challenge').textContent = currentChallenge + 1;
+            document.getElementById('challenge-title').textContent = challenge.title;
+            document.getElementById('challenge-description').textContent = challenge.description;
+            document.getElementById('traditional-choice').textContent = challenge.traditional;
+            document.getElementById('pretzel-choice').textContent = challenge.pretzel;
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+        }
+
+        function makeChoice(choice) {
+            const challenge = challenges[currentChallenge];
+            const resultDiv = document.getElementById('result');
+            const nextBtn = document.getElementById('next-btn');
+
+            if (choice === 'traditional') {
+                resultDiv.textContent = challenge.traditionalResult;
+                resultDiv.className = 'result warning-result';
+                totalScore += challenge.traditionalPoints;
+            } else {
+                resultDiv.textContent = challenge.pretzelResult;
+                resultDiv.className = 'result success-result';
+                totalScore += challenge.pretzelPoints;
+            }
+
+            document.getElementById('score').textContent = Math.max(0, totalScore);
+            resultDiv.style.display = 'block';
+            nextBtn.style.display = 'inline-block';
+
+            // Disable choice buttons
+            document.getElementById('traditional-choice').disabled = true;
+            document.getElementById('pretzel-choice').disabled = true;
+        }
+
+        function nextChallenge() {
+            currentChallenge++;
+            
+            if (currentChallenge >= challenges.length) {
+                showFinalScreen();
+            } else {
+                // Reset buttons
+                document.getElementById('traditional-choice').disabled = false;
+                document.getElementById('pretzel-choice').disabled = false;
+                showChallenge();
+            }
+        }
+
+        function showFinalScreen() {
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'block';
+
+            const finalTitle = document.getElementById('final-title');
+            const finalMessage = document.getElementById('final-message');
+
+            if (totalScore >= 80) {
+                finalTitle.textContent = "Outstanding! You're Ready to Lead";
+                finalMessage.textContent = `Score: ${totalScore}/100. You understand that marketing how customers actually buy delivers superior results. Pretzel can help you implement this approach at scale.`;
+            } else if (totalScore >= 40) {
+                finalTitle.textContent = "Good Progress, But There's More";
+                finalMessage.textContent = `Score: ${totalScore}/100. You're moving in the right direction, but traditional approaches are holding you back. See how Pretzel's journey-based methodology could transform your results.`;
+            } else {
+                finalTitle.textContent = "Time for a New Approach";
+                finalMessage.textContent = `Score: ${totalScore}/100. Traditional marketing tactics are failing in today's buyer landscape. Discover how Pretzel helps CMOs market how customers actually buy.`;
+            }
+        }
+
+        function restartGame() {
+            currentChallenge = 0;
+            totalScore = 0;
+            document.getElementById('final-screen').style.display = 'none';
+            document.getElementById('intro-screen').style.display = 'block';
+            document.getElementById('score').textContent = '0';
+        }
+    </script>
+</body>
+</html>
